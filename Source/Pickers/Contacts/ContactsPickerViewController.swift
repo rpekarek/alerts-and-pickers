@@ -163,7 +163,6 @@ final class ContactsPickerViewController: UIViewController {
             DispatchQueue.main.async {
                 self.fetchContacts(completionHandler: completionHandler)
             }
-
         case .denied, .restricted:
             /// User has denied the current app to access the contacts.
             let productName = Bundle.main.infoDictionary!["CFBundleName"]!
@@ -173,6 +172,13 @@ final class ContactsPickerViewController: UIViewController {
                     UIApplication.shared.open(settingsURL)
                 }
             }
+            alert.addAction(title: "OK", style: .cancel) { [unowned self] action in
+                self.alertController?.dismiss(animated: true)
+            }
+            alert.show()
+        @unknown default:
+            let productName = Bundle.main.infoDictionary!["CFBundleName"]!
+            let alert = UIAlertController(style: .alert, title: "Unknown Error", message: "\(productName) does not have access to contacts.")
             alert.addAction(title: "OK", style: .cancel) { [unowned self] action in
                 self.alertController?.dismiss(animated: true)
             }

@@ -76,6 +76,8 @@ final class PhotoLibraryPickerViewController: UIViewController {
         switch layout.scrollDirection {
         case .vertical: return UIDevice.current.userInterfaceIdiom == .pad ? 3 : 2
         case .horizontal: return 1
+        @unknown default:
+            return 1
         }
     }
     
@@ -84,6 +86,8 @@ final class PhotoLibraryPickerViewController: UIViewController {
         case .vertical:
             return CGSize(width: view.bounds.width / columns, height: view.bounds.width / columns)
         case .horizontal:
+            return CGSize(width: view.bounds.width, height: view.bounds.height / columns)
+        @unknown default:
             return CGSize(width: view.bounds.width, height: view.bounds.height / columns)
         }
     }
@@ -178,12 +182,20 @@ final class PhotoLibraryPickerViewController: UIViewController {
         case .denied, .restricted:
             /// User has denied the current app to access the contacts.
             let productName = Bundle.main.infoDictionary!["CFBundleName"]!
-            let alert = UIAlertController(style: .alert, title: "Permission denied", message: "\(productName) does not have access to contacts. Please, allow the application to access to your photo library.")
+            let alert = UIAlertController(style: .alert, title: "Permission denied", message: "\(productName) does not have access to photo library. Please, allow the application to access to your photo library.")
             alert.addAction(title: "Settings", style: .destructive) { action in
                 if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(settingsURL)
                 }
             }
+            alert.addAction(title: "OK", style: .cancel) { [unowned self] action in
+                self.alertController?.dismiss(animated: true)
+            }
+            alert.show()
+        @unknown default:
+                        /// User has denied the current app to access the contacts.
+            let productName = Bundle.main.infoDictionary!["CFBundleName"]!
+            let alert = UIAlertController(style: .alert, title: "Unknown error", message: "\(productName) does not have access to photo library.")
             alert.addAction(title: "OK", style: .cancel) { [unowned self] action in
                 self.alertController?.dismiss(animated: true)
             }
